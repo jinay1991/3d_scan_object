@@ -19,16 +19,19 @@ def convert2video(image_seq_dir, video_name='video.avi'):
     """
     if os.path.exists(os.path.join(os.path.abspath(os.path.curdir), video_name)):
         os.remove(os.path.join(os.path.abspath(os.path.curdir), video_name))
-    first_image = cv2.imread(os.path.join(image_seq_dir, "0.jpg"))
+    log.debug("searching into %s", image_seq_dir)
+    first_image = cv2.imread(os.path.join(image_seq_dir, "0_OUT.jpg"))
+    if first_image is None:
+        log.error("can not obtain first image")
+        return
     height , width , layers =  first_image.shape
 
     frameId = 0
-    fourcc = cv2.VideoWriter_fourcc(*'XVID')
-    video = cv2.VideoWriter(video_name,fourcc,10.0,(width,height), isColor=True)
+    fourcc = cv2.VideoWriter_fourcc(*'FMP4')
+    video = cv2.VideoWriter(video_name,fourcc,2.0,(width,height), isColor=True)
     filelist = glob.glob(os.path.join(image_seq_dir, "*.jpg"))
-    log.info("len(filelist): %s", len(filelist))
     for frameId in range(len(filelist)):
-        filepath = os.path.join(image_seq_dir, "%d.jpg" % frameId)
+        filepath = os.path.join(image_seq_dir, "%d_OUT.jpg" % frameId)
         frame = cv2.imread(filepath)
         video.write(frame)
 
