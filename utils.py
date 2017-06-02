@@ -9,11 +9,21 @@ import numpy as np
 import os
 import logging
 import glob
+import re
 
 log = logging.getLogger()
 logging.basicConfig(level=logging.INFO)
 
-def convert2video(image_seq_dir, video_name='video.avi'):
+def sort_list(l):
+    """
+    Sort provided list based on Human Sorting
+    (i.e. 0.jpg, 1.jpg, 2.jpg, ..., 10.jpg,...)
+    """
+    convert = lambda text: int(text) if text.isdigit() else text
+    alphanum_key = lambda key: [ convert(c) for c in re.split('([0-9]+)', key) ]
+    l.sort(key=alphanum_key)
+
+def convert2video(image_seq_dir, video_name='video.avi', fps=2.0):
     """
     Converts provided Image sequece present in dir to Video.
     """
@@ -28,7 +38,7 @@ def convert2video(image_seq_dir, video_name='video.avi'):
 
     frameId = 0
     fourcc = cv2.VideoWriter_fourcc(*'FMP4')
-    video = cv2.VideoWriter(video_name,fourcc,2.0,(width,height), isColor=True)
+    video = cv2.VideoWriter(video_name,fourcc,fps,(width,height), isColor=True)
     filelist = glob.glob(os.path.join(image_seq_dir, "*.jpg"))
     for frameId in range(len(filelist)):
         filepath = os.path.join(image_seq_dir, "%d_OUT.jpg" % frameId)
