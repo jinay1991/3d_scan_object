@@ -127,20 +127,17 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
 
     @Override
     public void onCameraViewStopped() {
-
+        matInRGBA.release();
+        matOutRGBA.release();
     }
 
     @Override
     public Mat onCameraFrame(CameraBridgeViewBase.CvCameraViewFrame inputFrame) {
         matInRGBA = inputFrame.rgba();
 
-        image_processing_main(matInRGBA.getNativeObjAddr(), matOutRGBA.getNativeObjAddr());
+        int ret = image_processing_main(matInRGBA.getNativeObjAddr(), matOutRGBA.getNativeObjAddr());
         return matOutRGBA;
     }
 
-    /**
-     * A native method that is implemented by the 'native-lib' native library,
-     * which is packaged with this application.
-     */
-    public native int image_processing_main(long addrInRGBA, long addrOutRGBA);
+    public native int image_processing_main(long addrRGBA, long addrRGB);
 }

@@ -14,6 +14,10 @@ bool compareContourAreas(std::vector<cv::Point> contour1, std::vector<cv::Point>
 // ---------------------------
 //  Scan Class Public Methods
 // ---------------------------
+Scan::Scan(cv::Mat& input)
+{
+    mInput = input;
+}
 Scan::Scan(char *filename)
 {
     mFilename = std::string(filename);

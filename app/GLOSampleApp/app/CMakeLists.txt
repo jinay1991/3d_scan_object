@@ -10,6 +10,16 @@ include_directories(/Users/jinay/Downloads/OpenCV-android-sdk/sdk/native/jni/inc
 add_library( lib_opencv SHARED IMPORTED )
 set_target_properties(lib_opencv PROPERTIES IMPORTED_LOCATION ${CMAKE_CURRENT_SOURCE_DIR}/src/main/jniLibs/${ANDROID_ABI}/libopencv_java3.so)
 
+
+# -----------------
+#  Image Proc Kits
+# -----------------
+set(INCLUDE_DIRS ${CMAKE_CURRENT_SOURCE_DIR}/../../../cpp/include)
+
+file(GLOB SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/../../../cpp/src/*.cpp")
+
+include_directories(${INCLUDE_DIRS})
+
 # Creates and names a library, sets it as either STATIC
 # or SHARED, and provides the relative paths to its source code.
 # You can define multiple libraries, and CMake builds them for you.
@@ -22,7 +32,9 @@ add_library( # Sets the name of the library.
              SHARED
 
              # Provides a relative path to your source file(s).
-             src/main/cpp/native-lib.cpp )
+             src/main/cpp/native-lib.cpp 
+             
+             ${SOURCES})
 
 # Searches for a specified prebuilt library and stores the path as a
 # variable. Because CMake includes system libraries in the search path by

@@ -21,13 +21,14 @@ class Scan
         cv::Mat mThresh;
         cv::Mat mCropped;
 
-        cv::Mat vis_in;
-
         std::vector<cv::Rect>                   contours_boxes;
         std::vector<cv::Point>                  contours_centroids;
         std::vector<std::vector<cv::Point> >    contours_pts;
 
     public:
+        cv::Mat vis_in;
+
+        Scan(cv::Mat& input);
         Scan(char *filename);
         void Load();
         void preprocess();
