@@ -22,11 +22,14 @@ int main(int argc, char **argv)
 
     if (sFilename.substr(sFilename.find_last_of(".") + 1) == "jpg")
     {
+        printf("image processing\n");
         Scan scn(filename);
+        scn.LoadImage();
         scn.Image(true);
     }
     else
     {
+        printf("video processing\n");
         Scan scn(filename);
         scn.Video();
     }

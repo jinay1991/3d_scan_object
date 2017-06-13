@@ -44,7 +44,7 @@ class Scan
 
         Scan(cv::Mat& input);
         Scan(char *filename);
-        void Load();
+        void LoadImage();
         void preprocess();
         int detect_contours();
         int detect_edges(uint8_t lo_thresh=80, uint8_t hi_thresh=160);

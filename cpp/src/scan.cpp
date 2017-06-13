@@ -23,7 +23,6 @@ Scan::Scan(cv::Mat& input)
 Scan::Scan(char *filename)
 {
     mFilename = std::string(filename);
-    Load();
     InitParams();
     instance.clear();
 }
@@ -36,7 +35,7 @@ void Scan::InitParams()
     contours_info.max_boxes.clear();
     contours_info.alignH.clear();
 }
-void Scan::Load()
+void Scan::LoadImage()
 {
     mInput = cv::imread(mFilename, cv::IMREAD_UNCHANGED);
     if (mInput.rows == 0 || mInput.cols == 0)
@@ -234,18 +233,9 @@ int Scan::Video()
     const std::string outvid = mFilename.substr(0, pAt) + "_OUT.mp4";   // Form the new name with container
     int ex = static_cast<int>(inputVideo.get(CV_CAP_PROP_FOURCC));     // Get Codec Type- Int form
 
-    cv::Size S = cv::Size((int) inputVideo.get(CV_CAP_PROP_FRAME_WIDTH),    // Acquire input size
-                  (int) inputVideo.get(CV_CAP_PROP_FRAME_HEIGHT));
-
-    cv::VideoWriter outputVideo; // Open the output
     printf("outvid: %s\n", outvid.c_str());
-    outputVideo.open(outvid, ex, inputVideo.get(CV_CAP_PROP_FPS), S, true);
+    
 
-    if (!outputVideo.isOpened())
-    {
-        printf("Could not open the output video for write: %s\n", mFilename.c_str());
-        return -1;
-    }
     for (int i = 0; ; i++)
     {
         inputVideo >> mInput;
@@ -273,6 +263,9 @@ int Scan::Video()
 
 
     // find max width, height of object (mean accross all the frames)
+
+    int rows = mInput.rows;
+    int cols = mInput.cols;
     int obj_width = 0;
     int obj_height = 0;
     for (int i = 0; i < instance.size(); i++)
@@ -295,10 +288,18 @@ int Scan::Video()
         obj_height = std::max(obj_height, max_dim.height);
     }
 
+    cv::Size S = cv::Size(obj_width, obj_height);
+
+    cv::VideoWriter outputVideo; // Open the output
+    outputVideo.open(outvid, ex, inputVideo.get(CV_CAP_PROP_FPS), S, true);
+    if (!outputVideo.isOpened())
+    {
+        printf("Could not open the output video for write: %s\n", mFilename.c_str());
+        return -1;
+    }
     // crop frames and save to video
     for (int i = 0; i < instance.size(); i++)
     {
-        printf("instance[%d]\n", i);
         struct contours_info info = instance[i];
         cv::Mat outFrame = outFrames[i];
         int rows = outFrame.rows;
@@ -312,9 +313,18 @@ int Scan::Video()
         crop_box.width = obj_width;
         crop_box.height = obj_height;
 
+        // printf("crop_box: {%d, %d, %d, %d} with rows:%d, cols:%d\n", crop_box.x, crop_box.y, crop_box.width, crop_box.height, rows, cols);
         cv::Mat cropped = outFrame(crop_box).clone();
-
+        
+        
         outputVideo << cropped;
+        cv::imshow("cropped", cropped);
+        char key = cv::waitKey(20);
+        if (key == 'p')
+            key = cv::waitKey(0);
+
+        if (key == 27)
+            break;
     }
 
     return 0;
