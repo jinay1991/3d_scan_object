@@ -2,6 +2,7 @@ package com.example.jinay.glosampleapp;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
+import android.hardware.Camera;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -45,11 +46,6 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
         }
     };
 
-    // Used to load the 'native-lib' library on application startup.
-    static {
-        System.loadLibrary("native-lib");
-    }
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -77,7 +73,7 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
         super.onResume();
         if (!OpenCVLoader.initDebug()) {
             Log.d(TAG, "Internal OpenCV library not found. Using OpenCV Manager for initialization");
-            OpenCVLoader.initAsync(OpenCVLoader.OPENCV_VERSION_3_0_0, this, _baseLoaderCallback);
+            OpenCVLoader.initAsync(OpenCVLoader.OPENCV_VERSION_3_2_0, this, _baseLoaderCallback);
         } else {
             Log.d(TAG, "OpenCV library found inside package. Using it!");
             _baseLoaderCallback.onManagerConnected(LoaderCallbackInterface.SUCCESS);
@@ -121,8 +117,8 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
 
     @Override
     public void onCameraViewStarted(int width, int height) {
-        matInRGBA = new Mat(height, width, CvType.CV_8UC4);
-        matOutRGBA = new Mat(height, width, CvType.CV_8UC4);
+        matInRGBA = new Mat(height, width, CvType.CV_8UC1);
+        matOutRGBA = new Mat(height, width, CvType.CV_8UC3);
     }
 
     @Override
@@ -133,11 +129,11 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
 
     @Override
     public Mat onCameraFrame(CameraBridgeViewBase.CvCameraViewFrame inputFrame) {
-        matInRGBA = inputFrame.rgba();
+        matInRGBA = inputFrame.gray();
 
-        int ret = image_processing_main(matInRGBA.getNativeObjAddr(), matOutRGBA.getNativeObjAddr());
+        int ret = scanner(matInRGBA.getNativeObjAddr(), matOutRGBA.getNativeObjAddr());
         return matOutRGBA;
     }
 
-    public native int image_processing_main(long addrRGBA, long addrRGB);
+    public native int scanner(long addrRGBA, long addrRGB);
 }

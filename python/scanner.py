@@ -344,7 +344,7 @@ class MultiScan():
     def crop_frame(self):
         i = 0
         for scan in self.scanlist:
-            
+
             rows, cols = scan.rgb_image.shape[:2]
             (cx, cy) = (scan.center_x, scan.center_y)
             (bx, by) = (int(self.obj_width / 2), int(self.obj_height / 2))
@@ -353,7 +353,7 @@ class MultiScan():
             y = cy - by
             w = self.obj_width
             h = self.obj_height
-    
+
             # draw contour
             vis_in = scan.rgb_image.copy()
             cv2.drawContours(vis_in, scan.contour_pts, -1, (255, 0, 0), thickness=2)

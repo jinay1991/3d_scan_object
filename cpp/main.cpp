@@ -18,8 +18,18 @@ int main(int argc, char **argv)
 
     printf("filename: %s\n", filename);
 
-    Scan scn(filename);
-    scn.Video();
+    std::string sFilename(filename);
+
+    if (sFilename.substr(sFilename.find_last_of(".") + 1) == "jpg")
+    {
+        Scan scn(filename);
+        scn.Image(true);
+    }
+    else
+    {
+        Scan scn(filename);
+        scn.Video();
+    }
 
     return 0;
 }

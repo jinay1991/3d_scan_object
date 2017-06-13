@@ -1,11 +1,7 @@
-#include <jni.h>
-#include <string>
-#include <opencv2/opencv.hpp>
-#include <scan.hpp>
+#include "native-lib.h"
 
-extern "C"
 JNIEXPORT jint JNICALL
-Java_com_example_jinay_glosampleapp_MainActivity_image_1processing_1main(JNIEnv *env,
+Java_com_example_jinay_glosampleapp_MainActivity_scanner(JNIEnv *env,
                                                                          jobject instance,
                                                                          jlong addrInRGBA,
                                                                          jlong addrOutRGBA) {
@@ -13,17 +9,27 @@ Java_com_example_jinay_glosampleapp_MainActivity_image_1processing_1main(JNIEnv 
     cv::Mat inRGBA = *(cv::Mat *) addrInRGBA;
     cv::Mat outRGBA = *(cv::Mat *) addrOutRGBA;
 
-    cv::Mat bgr;
-    cv::cvtColor(inRGBA, bgr, CV_RGBA2BGR);
+    ProcessMain(inRGBA, outRGBA);
 
-    Scan scn(bgr);
-    scn.preprocess();
-    scn.detect_edges();
-    scn.detect_contours();
-    scn.draw();
+    // Scan scn(bgr);
+    // scn.Image();
 
-    cv::cvtColor(scn.vis_in, outRGBA, CV_BGR2RGBA);
+    // cv::cvtColor(scn.vis_in, outRGBA, CV_BGR2RGBA);
+
 
     return (jint) 1;
 
+}
+
+int ProcessMain(cv::Mat& in, cv::Mat& out)
+{
+    cv::Mat bgr;
+    cv::cvtColor(in, bgr, CV_GRAY2BGR);
+
+    Scan scn(bgr);
+    scn.Image(false);
+
+    cv::cvtColor(scn.vis_in, out, CV_BGR2RGB);
+
+    return 0;
 }
